@@ -28,12 +28,20 @@ public:
   QString getMinerVersion();
   void setMinerVersion(QString);
 
+  QString getLastLogFileName() const;
+  void setLastLogFileName(const QString &value);
+
+  qint64 getLastLogLineNumber() const;
+  void setLastLogLineNumber(const qint64 &value);
+
 private:
-  int remotePort;
-  QString minerDirectory;
-  bool logsFlag;
-  bool recentStat;
-  QString minerVersion;
+  int remotePort = 0;
+  QString minerDirectory = "";
+  bool logsFlag = false;
+  bool recentStat = false;
+  QString minerVersion = "";
+  QString lastLogFileName = "";
+  qint64 lastLogLineNumber = 0;
 };
 
 #endif // SETTINGS_H

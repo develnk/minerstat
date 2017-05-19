@@ -3,12 +3,14 @@
 #include "common.h"
 #include <QtCore>
 #include <QTimer>
+#include "loganalitic.h"
 
 Claymore::Claymore(QObject *parent) : QObject(parent){}
 
 Claymore::~Claymore()
 {
   disconnect(this, SLOT(getDataTCP()));
+  disconnect(this, SLOT(getDataLogs()));
 }
 
 bool Claymore::checkSettings()
@@ -33,7 +35,7 @@ void Claymore::startAlgorithm()
   if (checkSettings()) {
       timer = new QTimer(this);
       connect(timer, &QTimer::timeout, this, &Claymore::executeAlgorithm);
-      timer->start(1000);
+      timer->start(20000);
   }
 }
 
@@ -48,7 +50,7 @@ void Claymore::sendData()
 }
 
 /**
- * Get total info from miner client.
+ * Slot to get total info from miner client.
  *
  * @brief Claymore::getDataTCP
  */
@@ -58,11 +60,29 @@ void Claymore::getDataTCP()
   qDebug() << "TCP DATA Received:" << dataTCP;
 }
 
+/**
+ * Slot to get data from logs.
+ *
+ * @brief Claymore::getDataLogs
+ */
+void Claymore::getDataLogs()
+{
+  QStringList tmp = logs->getData();
+  for (QStringList::iterator it = tmp.begin(); it != tmp.end(); ++it) {
+    QString current = *it;
+    dataLogs.append(current.toUtf8());
+  }
+  qDebug() << "Logs DATA Received:" << dataLogs;
+}
+
 void Claymore::executeAlgorithm()
 {
-  tcpRequest = QSharedPointer<TCPRequest>(new TCPRequest(this));
-  my_connect(tcpRequest, SIGNAL(dataReady()), this, SLOT(getDataTCP()));
-  logs = QSharedPointer<logAnalitic>(new logAnalitic(this));
+  tcpRequest = QSharedPointer<TCPRequest>(new TCPRequest());
+  logs = QSharedPointer<logAnalitic>(new logAnalitic());
+  connect_from_pointer(tcpRequest, &TCPRequest::dataReady, this, &Claymore::getDataTCP, Qt::DirectConnection);
+  connect_from_pointer(logs, SIGNAL(dataReady()), this, SLOT(getDataLogs()), Qt::DirectConnection);
+  tcpRequest->start();
+  logs->start();
   // If all data gotten.
   sendData();
 }

@@ -90,6 +90,10 @@ void MainWindow::readSettings()
   int miner_client = m_Settings.value("/miner_client", "").toInt();
   QString client_directory = m_Settings.value("/client_directory", "").toString();
   settings.setMinerDirectory(client_directory);
+  QString last_log_file_name = m_Settings.value("/last_log_file_name", "").toString();
+  settings.setLastLogFileName(last_log_file_name);
+  qint64 last_log_line = m_Settings.value("/last_log_line_number", 0).toLongLong();
+  settings.setLastLogLineNumber(last_log_line);
   int nWidht = m_Settings.value("/widht", width()).toInt();
   int nHeight = m_Settings.value("/height", height()).toInt();
   QString rPort = m_Settings.value("/remote_port", "").toString();
@@ -126,6 +130,8 @@ void MainWindow::writeSettings()
   m_Settings.setValue("/remote_port", ui->remotePort->text());
   m_Settings.setValue("/logs_flag", ui->logsFlag->checkState());
   m_Settings.setValue("/enable_receive_stat", ui->enableReceiveStat->checkState());
+  m_Settings.setValue("/last_log_line_number", settings.getLastLogLineNumber());
+  m_Settings.setValue("/last_log_file_name", settings.getLastLogFileName());
   m_Settings.setValue("/widht", width());
   m_Settings.setValue("/height", height());
   m_Settings.endGroup();

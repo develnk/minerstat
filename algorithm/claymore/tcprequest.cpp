@@ -4,15 +4,6 @@
 
 TCPRequest::TCPRequest(QObject *parent): QObject(parent), tcpSocket(new QTcpSocket(this))
 {
-  QDataStream in(tcpSocket);
-  in.setVersion(QDataStream::Qt_5_8);
-  connect(tcpSocket, &QTcpSocket::connected, this, &TCPRequest::newRequest);
-  connect(tcpSocket, &QTcpSocket::readyRead, this, &TCPRequest::read);
-  typedef void (QAbstractSocket::*QAbstractSocketErrorSignal)(QAbstractSocket::SocketError);
-  connect(tcpSocket, static_cast<QAbstractSocketErrorSignal>(&QAbstractSocket::error), this, &TCPRequest::displayError);
-  QHostAddress hostAddr("127.0.0.1");
-  quint16 port = 3333;
-  tcpSocket->connectToHost(hostAddr, port);
 }
 
 TCPRequest::~TCPRequest()
@@ -25,6 +16,19 @@ QByteArray TCPRequest::getData()
   return data;
 }
 
+void TCPRequest::start()
+{
+  QDataStream in(tcpSocket);
+  in.setVersion(QDataStream::Qt_5_8);
+  connect(tcpSocket, &QTcpSocket::connected, this, &TCPRequest::newRequest);
+  connect(tcpSocket, &QTcpSocket::readyRead, this, &TCPRequest::read);
+  typedef void (QAbstractSocket::*QAbstractSocketErrorSignal)(QAbstractSocket::SocketError);
+  connect(tcpSocket, static_cast<QAbstractSocketErrorSignal>(&QAbstractSocket::error), this, &TCPRequest::displayError);
+  QHostAddress hostAddr("127.0.0.1");
+  quint16 port = 3333;
+  tcpSocket->connectToHost(hostAddr, port);
+}
+
 void TCPRequest::read()
 {
   _blockSize = tcpSocket->bytesAvailable();
@@ -33,13 +37,12 @@ void TCPRequest::read()
   }
 
   data = tcpSocket->readAll();
-  qDebug() << data;
+//  qDebug() << data;
   emit dataReady();
 }
 
 void TCPRequest::newRequest()
 {
-  qDebug() << "Send";
   QString s = QString("{\"id\":0,\"jsonrpc\":\"2.0\",\"method\":\"miner_getstat1\"}");
   QByteArray data = s.toUtf8();
   tcpSocket->write(data, data.size());

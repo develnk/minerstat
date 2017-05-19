@@ -9,10 +9,12 @@
 class TCPRequest : public QObject
 {
   Q_OBJECT
+
 public:
-  TCPRequest(QObject *parent);
+  TCPRequest(QObject *parent = 0);
   virtual ~TCPRequest();
   QByteArray getData();
+  void start();
 
 signals:
   void dataReady();
@@ -26,7 +28,7 @@ private:
   QTcpSocket *tcpSocket;
   QString toMessage;
   QString fromMessage;
-  quint16 _blockSize;
+  qint64 _blockSize;
   QByteArray data;
 };
 

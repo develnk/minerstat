@@ -57,3 +57,23 @@ void Settings::setMinerVersion(QString value)
 {
 minerVersion = value;
 }
+
+QString Settings::getLastLogFileName() const
+{
+    return lastLogFileName;
+}
+
+void Settings::setLastLogFileName(const QString &value)
+{
+    lastLogFileName = value;
+}
+
+qint64 Settings::getLastLogLineNumber() const
+{
+    return lastLogLineNumber;
+}
+
+void Settings::setLastLogLineNumber(const qint64 &value)
+{
+    lastLogLineNumber = value;
+}

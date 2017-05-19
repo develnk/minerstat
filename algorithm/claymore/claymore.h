@@ -22,6 +22,7 @@ signals:
 
 public slots:
   void getDataTCP();
+  void getDataLogs();
   void executeAlgorithm();
 
 private:
@@ -29,6 +30,7 @@ private:
   QList<QByteArray> dataLogs;
   QSharedPointer<TCPRequest> tcpRequest;
   QSharedPointer<logAnalitic> logs;
+  logAnalitic *logs2;
   QTimer *timer;
 };
 
